@@ -1,0 +1,28 @@
+{
+ "template": "https://github.com/JscorpTech/django",
+ "commit": "d8682a7685597c2cf088da2f240b78a7a71e91ec",
+ "checkout": null,
+ "context": {
+  "cookiecutter": {
+   "cacheops": true,
+   "silk": true,
+   "storage": true,
+   "rosetta": true,
+   "channels": true,
+   "ckeditor": true,
+   "modeltranslation": true,
+   "parler": true,
+   "project_name": "QuarGenerate",
+   "settings_module": "config.settings.local",
+   "runner": "wsgi",
+   "script": "entrypoint.sh",
+   "key": "key",
+   "port": "8023",
+   "phone": "998888112309",
+   "password": "2309",
+   "max_line_length": "120",
+   "project_slug": "quargenerate"
+  }
+ },
+ "directory": null
+}
