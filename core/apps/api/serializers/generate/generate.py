@@ -13,7 +13,6 @@ class BaseGenerateSerializer(serializers.ModelSerializer):
             "client",
             "purpose",
             "valuation_amount",
-            "input_pdf",
             "status",
             "result_pdf"
         ]
