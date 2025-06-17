@@ -1,9 +1,7 @@
 from rest_framework import serializers
-
-from core.apps.api.models import GenerateModel
 from django.core.files.base import ContentFile
-from core.apps.api.views.qrcode import add_qr_to_pdf
-import os
+from core.apps.api.models import GenerateModel
+from core.apps.api.views.qrcode import add_qr_to_each_page
 
 
 class BaseGenerateSerializer(serializers.ModelSerializer):
@@ -11,50 +9,46 @@ class BaseGenerateSerializer(serializers.ModelSerializer):
         model = GenerateModel
         fields = [
             "id",
-            "name",
-            "year",
-            "color",
             "owner",
-            "other_info",
-            "processed_pdf"
+            "client",
+            "purpose",
+            "valuation_amount",
+            "input_pdf",
+            "status",
+            "result_pdf"
         ]
 
 
 class ListGenerateSerializer(BaseGenerateSerializer):
-    class Meta(BaseGenerateSerializer.Meta): ...
+    class Meta(BaseGenerateSerializer.Meta):
+        pass
 
 
 class RetrieveGenerateSerializer(BaseGenerateSerializer):
-    class Meta(BaseGenerateSerializer.Meta): ...
+    class Meta(BaseGenerateSerializer.Meta):
+        pass
 
 
-
-        
 class CreateGenerateSerializer(serializers.ModelSerializer):
     class Meta:
         model = GenerateModel
         fields = [
-            'name',
-            'year',
-            'color',
             'owner',
-            'other_info',
-            'pdf_file'
+            'client',
+            'purpose',
+            'valuation_amount',
+            'input_pdf',
         ]
-
     def create(self, validated_data):
         instance = super().create(validated_data)
 
-        input_pdf_file = instance.pdf_file  
-        
-        output_path = f"media/processed_pdfs/processed_{instance.id}.pdf"
+        qr_text = f"{instance.owner} | {instance.client} | {instance.valuation_amount} so'm"
+        output_buffer = add_qr_to_each_page(instance.input_pdf.path, qr_text)
 
-        output_buffer = add_qr_to_pdf(input_pdf_file, output_path, instance)
-
-        instance.processed_pdf.save(
+        instance.result_pdf.save(
             f'processed_{instance.id}.pdf',
             ContentFile(output_buffer.read())
         )
-
         return instance
+
 

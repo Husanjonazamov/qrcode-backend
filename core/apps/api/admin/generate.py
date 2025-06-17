@@ -8,8 +8,9 @@ from core.apps.api.models import GenerateModel
 class GenerateAdmin(ModelAdmin):
     list_display = (
         "id",
-        "name",
-        "year",
-        "color",
-        "owner"
+        "owner",
+        "client",
+        "purpose",
+        "status",
+        "valuation_amount"
     )

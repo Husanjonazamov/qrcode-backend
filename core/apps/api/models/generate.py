@@ -3,19 +3,36 @@ from django.utils.translation import gettext_lazy as _
 from django_core.models import AbstractBaseModel
 
 
-class GenerateModel(AbstractBaseModel):
-    name = models.CharField(verbose_name=_("Nomi"), max_length=255)
-    year = models.CharField(verbose_name=_("Yili"), max_length=255, blank=True, null=True)
-    color = models.CharField(verbose_name=_("Rangi"), max_length=50, blank=True, null=True)
-    owner = models.CharField(verbose_name=_("Egasi"), max_length=50, blank=True, null=True)
-    other_info = models.TextField(verbose_name=_("Tavsif"), blank=True, null=True)
-    pdf_file = models.FileField(upload_to='pdfs/')
-    processed_pdf = models.FileField(upload_to='processed_pdfs/', null=True, blank=True)
+
+class StatusChoice(models.TextChoices):
+    DOWNLOAD = 'downloaded', 'Yuklab olingan'
+    PENDING = 'pending', 'Kutilmoqda'
+    ERROR = 'error', 'Xatolik'
 
     
+
+
+class GenerateModel(AbstractBaseModel):
+    owner = models.CharField(max_length=255, verbose_name="Mulk egasi")
+    client = models.CharField(max_length=255, verbose_name="Buyurtmachi")
+    purpose = models.CharField(max_length=255, verbose_name="Baholash maqsadi")
+    valuation_amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        verbose_name="Baholangan narx"
+    )
+    input_pdf = models.FileField(upload_to='uploads/original_pdfs/', verbose_name="Asl PDF fayl")
+    result_pdf = models.FileField(upload_to='uploads/processed_pdfs/', blank=True, null=True, verbose_name="Tayyorlangan PDF")
+    status = models.CharField(
+        verbose_name=_("Status"),
+        choices=StatusChoice.choices,
+        max_length=100,
+        default=StatusChoice.PENDING
+        )
+
     
     def __str__(self):
-        return self.name
+        return self.owner
     
     def get_absolute_url(self):
         return f"/car-info/{self.id}/"
