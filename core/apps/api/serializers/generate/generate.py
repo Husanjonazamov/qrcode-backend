@@ -14,6 +14,7 @@ class BaseGenerateSerializer(serializers.ModelSerializer):
             "purpose",
             "valuation_amount",
             "status",
+            "input_pdf",
             "result_pdf"
         ]
 
