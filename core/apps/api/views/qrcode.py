@@ -25,10 +25,11 @@ def encode_id_base64(item_id):
 def add_qr_to_each_page(original_pdf_path, item_id, base_url=BASE_URL):
 
     encoded_id = encode_id_base64(item_id)
-    qr_url = f"{base_url}/{encoded_id}"
+    qr_url = f"{base_url}/qr/show/{encoded_id}"
     print(qr_url)
 
     qr_img = qrcode.make(qr_url).convert("RGB")
+    print(qr_url)
     img_buffer = BytesIO()
     qr_img.save(img_buffer, format='PNG')
     img_buffer.seek(0)

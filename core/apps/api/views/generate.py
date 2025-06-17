@@ -19,6 +19,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from rest_framework.response import Response
+from rest_framework.views import APIView
+import base64
+from django.shortcuts import get_object_or_404
+
 
 @extend_schema(tags=["generate"])
 class GenerateView(BaseViewSetMixin, ModelViewSet):
@@ -66,3 +71,28 @@ class DownloadPDFAPIView(APIView):
             return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=os.path.basename(file_path))
         except GenerateModel.DoesNotExist:
             raise Http404("Obyekt topilmadi")
+
+
+
+
+class QRDecodeView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, encoded_id):
+        try:
+            padded = encoded_id + "=" * (-len(encoded_id) % 4)
+            decoded_bytes = base64.urlsafe_b64decode(padded)
+            decoded_str = decoded_bytes.decode()
+
+            item_id = decoded_str.split("-")[-1]
+            obj = get_object_or_404(GenerateModel, id=item_id)
+
+            return Response({
+                "pdf_url": obj.result_pdf.url,
+                "owner": obj.owner,
+                "client": obj.client,
+                "purpose": obj.purpose,
+                "valuation_amount": obj.valuation_amount
+            })
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
