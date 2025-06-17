@@ -33,7 +33,7 @@ class GenerateModel(AbstractBaseModel):
     
     def __str__(self):
         return self.owner
-    
+
     def get_absolute_url(self):
         return f"/car-info/{self.id}/"
 

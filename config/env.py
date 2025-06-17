@@ -22,6 +22,7 @@ env = environ.Env(
     VITE_HOST=(str, "vite"),
     NGROK_AUTHTOKEN=(str, "TOKEN"),
     BOT_TOKEN=(str, "TOKEN"),
+    BASE_URL=(str, "BASE_URL"),
     OTP_MODULE="core.services.otp",
     OTP_SERVICE="EskizService",
     PROJECT_ENV=(str, "prod"),

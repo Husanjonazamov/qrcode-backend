@@ -1,24 +1,43 @@
 import qrcode
+import base64
 from io import BytesIO
-from PyPDF2 import PdfReader, PdfWriter, PageObject
+from PyPDF2 import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
 from PIL import Image
+from config.env import env
+import hashlib
 
 
 
-def add_qr_to_each_page(original_pdf_path, qr_text):
-    qr_img = qrcode.make(qr_text).convert("RGB")
+BASE_URL = env("BASE_URL") 
+
+
+def encode_id_base64(item_id):
+    item_str = str(item_id)
+    hash_part = hashlib.sha256(item_str.encode()).hexdigest()[:6]  
+    full_str = f"{hash_part}-{item_str}"  
+    encoded = base64.urlsafe_b64encode(full_str.encode()).decode()
+    return encoded.rstrip("=")  
+
+
+
+def add_qr_to_each_page(original_pdf_path, item_id, base_url=BASE_URL):
+
+    encoded_id = encode_id_base64(item_id)
+    qr_url = f"{base_url}/{encoded_id}"
+    print(qr_url)
+
+    qr_img = qrcode.make(qr_url).convert("RGB")
     img_buffer = BytesIO()
     qr_img.save(img_buffer, format='PNG')
     img_buffer.seek(0)
-    qr_image_reader = ImageReader(Image.open(img_buffer)) 
+    qr_image_reader = ImageReader(Image.open(img_buffer))
 
     original_reader = PdfReader(original_pdf_path)
     writer = PdfWriter()
 
-    for i, page in enumerate(original_reader.pages):
+    for page in original_reader.pages:
         overlay_buffer = BytesIO()
         page_width = float(page.mediabox.width)
         page_height = float(page.mediabox.height)
@@ -36,7 +55,6 @@ def add_qr_to_each_page(original_pdf_path, qr_text):
         overlay_page = overlay_pdf.pages[0]
 
         page.merge_page(overlay_page)
-
         writer.add_page(page)
 
     output = BytesIO()

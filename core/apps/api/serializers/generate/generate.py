@@ -42,8 +42,8 @@ class CreateGenerateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = super().create(validated_data)
 
-        qr_text = f"{instance.owner} | {instance.client} | {instance.valuation_amount} so'm"
-        output_buffer = add_qr_to_each_page(instance.input_pdf.path, qr_text)
+        item_id = f"{instance.id}"
+        output_buffer = add_qr_to_each_page(instance.input_pdf.path, item_id)
 
         instance.result_pdf.save(
             f'processed_{instance.id}.pdf',
