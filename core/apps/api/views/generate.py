@@ -32,6 +32,8 @@ class GenerateView(BaseViewSetMixin, ModelViewSet):
         "retrieve": RetrieveGenerateSerializer,
         "create": CreateGenerateSerializer,
     }
+    queryset = GenerateModel.objects.order_by("-created_at") 
+
     
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()

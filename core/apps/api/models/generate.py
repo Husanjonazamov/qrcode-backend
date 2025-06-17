@@ -16,10 +16,10 @@ class GenerateModel(AbstractBaseModel):
     owner = models.CharField(max_length=255, verbose_name="Mulk egasi")
     client = models.CharField(max_length=255, verbose_name="Buyurtmachi")
     purpose = models.CharField(max_length=255, verbose_name="Baholash maqsadi")
-    valuation_amount = models.DecimalField(
-        max_digits=15,
-        decimal_places=2,
-        verbose_name="Baholangan narx"
+    valuation_amount = models.CharField(
+        verbose_name="Baholangan narx",
+        max_length=200,
+        blank=True, null=True
     )
     input_pdf = models.FileField(upload_to='uploads/original_pdfs/', verbose_name="Asl PDF fayl")
     result_pdf = models.FileField(upload_to='uploads/processed_pdfs/', blank=True, null=True, verbose_name="Tayyorlangan PDF")
