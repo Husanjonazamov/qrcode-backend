@@ -85,7 +85,6 @@ class QRDecodeView(APIView):
 
             item_id = decoded_str.split("-")[-1]
             obj = get_object_or_404(GenerateModel, id=item_id)
-            qr_url = "https://sifatbaho.uz/"
 
             return Response({
                 "pdf_url": obj.result_pdf.url,
@@ -93,7 +92,6 @@ class QRDecodeView(APIView):
                 "client": obj.client,
                 "purpose": obj.purpose,
                 "valuation_amount": obj.valuation_amount,
-                "qr_code_url": qr_url
             })
 
         except Exception as e:
