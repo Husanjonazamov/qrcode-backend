@@ -33,6 +33,7 @@ class CreateGenerateSerializer(serializers.ModelSerializer):
     class Meta:
         model = GenerateModel
         fields = [
+            "id",
             'owner',
             'client',
             'purpose',
@@ -42,13 +43,20 @@ class CreateGenerateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = super().create(validated_data)
 
-        item_id = f"{instance.id}"
-        output_buffer = add_qr_to_each_page(instance.input_pdf.path, item_id)
+        try:
+            item_id = str(instance.id)
+            original_pdf_path = instance.input_pdf.path
 
-        instance.result_pdf.save(
-            f'processed_{instance.id}.pdf',
-            ContentFile(output_buffer.read())
-        )
+            output_buffer = add_qr_to_each_page(original_pdf_path, item_id)
+
+            instance.result_pdf.save(
+                f"processed_{instance.id}.pdf",
+                ContentFile(output_buffer.read())
+            )
+
+        except Exception as e:
+            raise serializers.ValidationError(f"Error: \n\n{e}\n\n")
+
         return instance
 
 
