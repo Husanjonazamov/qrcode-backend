@@ -19,10 +19,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from rest_framework.response import Response
-from rest_framework.views import APIView
 import base64
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
+from datetime import timedelta
+from rest_framework.decorators import action
+
+
 
 
 @extend_schema(tags=["generate"])
@@ -39,6 +42,23 @@ class GenerateView(BaseViewSetMixin, ModelViewSet):
     }
     queryset = GenerateModel.objects.order_by("-created_at") 
 
+    @action(detail=False, methods=["get"], url_path="stats", permission_classes=[AllowAny])
+    def stats(self, request):
+        today = now().date()
+        start_of_week = today - timedelta(days=6)
+        start_of_month = today.replace(day=1)
+
+        daily_count = GenerateModel.objects.filter(created_at__date=today).count()
+        weekly_count = GenerateModel.objects.filter(created_at__date__gte=start_of_week).count()
+        monthly_count = GenerateModel.objects.filter(created_at__date__gte=start_of_month).count()
+        total_count = GenerateModel.objects.count()
+
+        return Response({
+            "daily": daily_count,
+            "weekly": weekly_count,
+            "monthly": monthly_count,
+            "total": total_count
+        })
     
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
